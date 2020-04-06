@@ -16,6 +16,11 @@ class ServiceRunner(object):
     then use the start method to serve them and the stop and kill methods
     to stop them. The wait method will block until all services have stopped.
 
+    允许用户同时提供多种服务。
+    调用者可以使用名称注册多个服务类，
+    然后使用start方法为其提供服务，并使用stop和kill方法将其停止。
+    wait方法将阻塞，直到所有服务都停止。
+
     Example::
 
         runner = ServiceRunner(config)
@@ -46,6 +51,9 @@ class ServiceRunner(object):
         """ Add a service class to the runner.
         There can only be one service class for a given service name.
         Service classes must be registered before calling start()
+        将服务类添加到runner。
+        给定服务名称只能有一个服务类。
+        必须在调用start()方法之前注册服务类
         """
         service_name = get_service_name(cls)
         container = self.container_cls(cls, self.config)
@@ -59,6 +67,10 @@ class ServiceRunner(object):
 
         All containers are started concurrently and the method will block
         until all have completed their startup routine.
+
+        启动所有注册的服务。
+        使用__init__方法中提供的容器类为每个服务创建一个新容器。
+        所有容器同时启动，该方法将阻塞，直到所有容器都完成了它们的启动例程。
         """
         service_names = ', '.join(self.service_names)
         _log.info('starting services: %s', service_names)
@@ -70,6 +82,9 @@ class ServiceRunner(object):
     def stop(self):
         """ Stop all running containers concurrently.
         The method blocks until all containers have stopped.
+
+        同时停止所有正在运行的容器。
+        该方法将阻塞，直到所有容器停止。
         """
         service_names = ', '.join(self.service_names)
         _log.info('stopping services: %s', service_names)
@@ -81,6 +96,8 @@ class ServiceRunner(object):
     def kill(self):
         """ Kill all running containers concurrently.
         The method will block until all containers have stopped.
+        杀死所有正在运行的容器
+        该方法将阻塞，直到所有容器停止
         """
         service_names = ', '.join(self.service_names)
         _log.info('killing services: %s', service_names)
@@ -91,6 +108,7 @@ class ServiceRunner(object):
 
     def wait(self):
         """ Wait for all running containers to stop.
+        等待所有正在运行的容器停止
         """
         try:
             SpawningProxy(self.containers, abort_on_error=True).wait()
